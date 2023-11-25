@@ -30,3 +30,19 @@ Notes:
 - The current implementation will replace any existing `tc` configuration on the specified interfaces. 
 - IP and routing configuration must be done separately.
 - `vlan-access-mode-up.sh` should be executed after both interfaces are up and `vlan-access-mode-down.sh` should be executed before either interface goes down.
+
+An example `/etc/network/interfaces` configuration for the above interfaces could look like this:
+
+```text
+auto eth0
+allow-hotplug eth0
+iface eth0 inet manual
+
+auto eth0.100
+iface eth0.100 inet static
+    address 10.0.100.1
+    netmask 255.255.255.0
+    vlan-raw-device eth0
+    post-up /etc/network/tc/vlan-access-mode-up.sh -i eth0 -v 100
+    pre-down /etc/network/tc/vlan-access-mode-down.sh -i eth0 -v 100
+```
